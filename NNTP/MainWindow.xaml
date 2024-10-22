@@ -6,7 +6,42 @@
         xmlns:local="clr-namespace:NNTP"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
+    <Canvas>
+        <Menu>
+            <MenuItem Header="File"
+                      Height="30"
+                      Width="100"
+                      FontSize="20">
+                <MenuItem Header="Setup"
+                          Click="Setup_Click"/>
+                <MenuItem Header="Open"/>
+                <Separator/>
+                <MenuItem Header="Exit"
+                          Click="Exit_Click"/>
+            </MenuItem>
+        </Menu>
+        <Button Height="30"
+                Width="100"
+                Margin="100,0"
+                Content="Connect"
+                Click="Connect_Button_Click"
+                FontSize="20"
+                />
+        <Label Height="30"
+               Width="400"
+               Margin="0,30"
+               Content="Content here"
+               Name="lblContent"
+               />
+        <Button Height="30"
+                Width="100"
+                Content="Get ListView"
+                Margin="200,0"
+                Click="GetListView_Button_Click"
+                />
+        <ListView
+                    Name="ListView" Height="304" Canvas.Top="130" Width="790"/>
 
-    </Grid>
+
+    </Canvas>
 </Window>
