@@ -14,7 +14,8 @@
                       FontSize="20">
                 <MenuItem Header="Setup"
                           Click="Setup_Click"/>
-                <MenuItem Header="Open"/>
+                <MenuItem Header="Open"
+                          Click="Open_Button_Click"/>
                 <Separator/>
                 <MenuItem Header="Exit"
                           Click="Exit_Click"/>

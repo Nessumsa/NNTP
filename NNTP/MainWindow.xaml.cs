@@ -76,64 +76,43 @@ namespace NNTP
             SetupWindow setupWindow = new SetupWindow();
             setupWindow.Show();
         }
-
-        private void GetListView_Button_Click(object sender, RoutedEventArgs e)
+        private void Open_Button_Click(object sender, RoutedEventArgs e)
         {
-            byte[] serverData = new byte[1024];
+            serverName = "news.dotsrc.org";
+            portNumber = "119";
+            username = "ronasm01@easv365.dk";
+            password = "255977";
+        }
+
+        private async void GetListView_Button_Click(object sender, RoutedEventArgs e)
+        {
+            byte[] serverData = new byte[262144];
             byte[] commandBytes;
             int bytesRead;
             
             string command = "LIST\r\n";
             commandBytes = Encoding.ASCII.GetBytes(command);
-            networkStream.Write(commandBytes, 0, commandBytes.Length);
-            Console.WriteLine("Command sent: " + command.Trim());
+            networkStream.WriteAsync(commandBytes, 0, commandBytes.Length);
 
-            // Read the server's response to the LIST command
-            StringBuilder fullResponse = new StringBuilder();
+            string fullResponse = "";
             do
             {
-                bytesRead = networkStream.Read(serverData, 0, serverData.Length);
-                fullResponse.Append(Encoding.ASCII.GetString(serverData, 0, bytesRead));
+                bytesRead = await networkStream.ReadAsync(serverData, 0, serverData.Length);
+                string response = Encoding.ASCII.GetString(serverData, 0, bytesRead);
+                fullResponse += response;
+
+                if (response.Contains("\r\n.\r\n") || response.Contains("\n.\n"))
+                {
+                    break;
+                }
             } while (bytesRead > 0);
 
-            string newsgroupsData = fullResponse.ToString();
-            string[] newsgroups = newsgroupsData.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+            string[] fullResponseInLines = fullResponse.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
 
-            // Populate the ListView with the newsgroups (this must be done on the UI thread)
-            foreach (string newsgroup in newsgroups)
+            foreach (string singleResponse in fullResponseInLines)
             {
-                // The format is: newsgroup_name <space> high <space> low <space> posting_status
-                // We only need the newsgroup name (the first part before the space)
-                string newsgroupName = newsgroup.Split(' ')[0];
-                ListView.Items.Add(newsgroupName);
+                ListView.Items.Add(singleResponse);
             }
         }
-        //private void GetListView(byte[] commandBytes, int bytesRead, byte[] serverData)
-        //{
-        //    string command = "LIST\r\n";
-        //    commandBytes = Encoding.ASCII.GetBytes(command);
-        //    networkStream.Write(commandBytes, 0, commandBytes.Length);
-        //    Console.WriteLine("Command sent: " + command.Trim());
-
-        //    // Read the server's response to the LIST command
-        //    StringBuilder fullResponse = new StringBuilder();
-        //    do
-        //    {
-        //        bytesRead = networkStream.Read(serverData, 0, serverData.Length);
-        //        fullResponse.Append(Encoding.ASCII.GetString(serverData, 0, bytesRead));
-        //    } while (bytesRead > 0);
-
-        //    string newsgroupsData = fullResponse.ToString();
-        //    string[] newsgroups = newsgroupsData.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
-
-        //    // Populate the ListView with the newsgroups (this must be done on the UI thread)
-        //    foreach (string newsgroup in newsgroups)
-        //    {
-        //        // The format is: newsgroup_name <space> high <space> low <space> posting_status
-        //        // We only need the newsgroup name (the first part before the space)
-        //        string newsgroupName = newsgroup.Split(' ')[0];
-        //        ListView.Items.Add(newsgroupName);
-        //    }
-        //}
     }
 }
